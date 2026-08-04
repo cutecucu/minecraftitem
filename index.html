@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마인크래프트 아이템 도감</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --bg: #262421;
+    --bg-deep: #1b1a17;
+    --panel: #3d3a34;
+    --panel-light: #cfc9ba;
+    --panel-dark: #17160f;
+    --slot-bg: #2c2a25;
+    --grass: #6aa84f;
+    --grass-dark: #4d7d38;
+    --diamond: #58e1e6;
+    --gold: #f0c419;
+    --redstone: #d94a3d;
+    --text: #f3efe4;
+    --text-dim: #b5ae9d;
+    --font-ui: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-pixel: 'Press Start 2P', monospace;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+      repeating-linear-gradient(45deg, var(--bg) 0 24px, #2b2925 24px 48px);
+    color: var(--text);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  a{ color: inherit; }
+
+  /* ---------- Header ---------- */
+  header{
+    padding: 36px 20px 22px;
+    text-align: center;
+  }
+  .logo-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .pixel-diamond{
+    width: 34px; height: 34px;
+    flex-shrink:0;
+  }
+  h1{
+    font-family: var(--font-ui);
+    font-weight: 800;
+    font-size: clamp(24px, 5vw, 36px);
+    margin: 0;
+    letter-spacing: -0.02em;
+    text-shadow: 2px 2px 0 var(--panel-dark);
+  }
+  header p{
+    margin: 6px 0 0;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  .count-badge{
+    display:inline-block;
+    margin-top: 12px;
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    color: var(--bg-deep);
+    background: var(--gold);
+    padding: 6px 10px;
+    border: 2px solid var(--panel-dark);
+    box-shadow: 2px 2px 0 var(--panel-dark);
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg-deep);
+    border-bottom: 4px solid var(--panel-dark);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    padding: 14px 16px;
+  }
+  .toolbar-inner{
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .search-row{
+    display:flex;
+    gap:10px;
+    margin-bottom: 10px;
+  }
+  .search-slot{
+    flex: 1;
+    position: relative;
+  }
+  .search-slot input{
+    width:100%;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    padding: 12px 14px 12px 40px;
+    background: var(--slot-bg);
+    color: var(--text);
+    border: none;
+    outline: none;
+    border-top: 3px solid var(--panel-dark);
+    border-left: 3px solid var(--panel-dark);
+    border-bottom: 3px solid var(--panel-light);
+    border-right: 3px solid var(--panel-light);
+  }
+  .search-slot input::placeholder{ color: var(--text-dim); }
+  .search-slot input:focus-visible{
+    outline: 3px solid var(--diamond);
+    outline-offset: 1px;
+  }
+  .search-icon{
+    position:absolute;
+    left: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 16px;
+    opacity: 0.7;
+    pointer-events:none;
+  }
+  .result-count{
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    color: var(--diamond);
+    white-space: nowrap;
+    align-self: center;
+    padding: 0 6px;
+  }
+
+  .chip-row{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .chip{
+    flex-shrink:0;
+    font-family: var(--font-ui);
+    font-weight:600;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--panel);
+    border: none;
+    cursor:pointer;
+    padding: 8px 14px;
+    border-top: 2px solid #57534a;
+    border-left: 2px solid #57534a;
+    border-bottom: 2px solid var(--panel-dark);
+    border-right: 2px solid var(--panel-dark);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+  .chip:focus-visible{ outline: 2px solid var(--diamond); outline-offset:2px; }
+  .chip .swatch{
+    width:10px; height:10px;
+    display:inline-block;
+    border: 1px solid rgba(0,0,0,0.4);
+  }
+  .chip.active{
+    background: var(--grass);
+    color: #16210f;
+    border-top-color:#8fce68;
+    border-left-color:#8fce68;
+    border-bottom-color: var(--grass-dark);
+    border-right-color: var(--grass-dark);
+  }
+
+  /* ---------- Grid ---------- */
+  main{
+    max-width: 1100px;
+    margin: 24px auto 0;
+    padding: 0 16px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+    gap: 12px;
+  }
+  .item-card{
+    background: var(--panel);
+    border-top: 3px solid #59564c;
+    border-left: 3px solid #59564c;
+    border-bottom: 3px solid var(--panel-dark);
+    border-right: 3px solid var(--panel-dark);
+    padding: 8px;
+    text-align:center;
+    position:relative;
+  }
+  .item-slot{
+    background: var(--slot-bg);
+    border-top: 3px solid var(--panel-dark);
+    border-left: 3px solid var(--panel-dark);
+    border-bottom: 3px solid #4a463e;
+    border-right: 3px solid #4a463e;
+    aspect-ratio: 1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .item-slot img{
+    width: 82%;
+    height: 82%;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .item-id{
+    position:absolute;
+    top:2px; left:2px;
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    color: var(--gold);
+    background: rgba(0,0,0,0.55);
+    padding: 2px 4px;
+    line-height:1;
+  }
+  .placeholder-icon{
+    font-family: var(--font-pixel);
+    font-size: 16px;
+    color: #5c584e;
+  }
+  .item-name{
+    margin-top: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    min-height: 2.6em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .item-name-en{
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+  .item-cat{
+    margin-top: 3px;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .empty-state .big{
+    font-family: var(--font-pixel);
+    font-size: 12px;
+    color: var(--redstone);
+    display:block;
+    margin-bottom: 10px;
+  }
+
+  footer{
+    max-width: 1100px;
+    margin: 40px auto 0;
+    padding: 16px;
+    text-align:center;
+    color: var(--text-dim);
+    font-size: 12px;
+    border-top: 2px dashed #4a463e;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <svg class="pixel-diamond" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <rect x="6" y="1" width="4" height="1" fill="#58e1e6"/>
+      <rect x="4" y="2" width="8" height="1" fill="#58e1e6"/>
+      <rect x="2" y="3" width="12" height="2" fill="#7ff0f4"/>
+      <rect x="1" y="5" width="14" height="3" fill="#58e1e6"/>
+      <rect x="2" y="8" width="12" height="2" fill="#3bb9be"/>
+      <rect x="4" y="10" width="8" height="2" fill="#3bb9be"/>
+      <rect x="6" y="12" width="4" height="2" fill="#2a8f93"/>
+    </svg>
+    <h1>마인크래프트 아이템 도감</h1>
+  </div>
+  <p>번호 · 이름으로 검색하고 종류별로 살펴보세요</p>
+  <span class="count-badge" id="totalBadge">0 ITEMS</span>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-row">
+      <div class="search-slot">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="번호 또는 이름 검색 (예: 264, 다이아몬드, diamond)" autocomplete="off">
+      </div>
+      <div class="result-count" id="resultCount"></div>
+    </div>
+    <div class="chip-row" id="chipRow"></div>
+  </div>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <span class="big">NOT FOUND</span>
+    검색 결과가 없습니다. 다른 번호나 이름으로 찾아보세요.
+  </div>
+</main>
+
+<footer>
+  <code>images/아이템번호.png</code>를 넣으면 그 이미지가 우선 표시되고,<br>
+  없는 번호는 인터넷에서 자동으로 기본 텍스처를 불러옵니다 (인터넷 연결 필요).<br>
+  아이템 이름·분류 수정은 이 파일 안의 <code>ITEM_DATA</code> 값을 편집하면 됩니다.
+</footer>
+
+<script>
+  const ITEM_DATA = {"1":{"name":"돌","en":"Stone","category":"자연 블록","tex":"blocks/stone"},"2":{"name":"잔디 블록","en":"Grass Block","category":"자연 블록","tex":"blocks/dirt"},"3":{"name":"흙","en":"Dirt","category":"자연 블록","tex":"blocks/dirt"},"4":{"name":"조약돌","en":"Cobblestone","category":"자연 블록","tex":"blocks/cobblestone"},"5":{"name":"나무 판자","en":"Wood Planks","category":"건축 블록","tex":"blocks/planks_oak"},"6":{"name":"묘목","en":"Sapling","category":"식물/농작물","tex":"blocks/sapling_oak"},"7":{"name":"기반암","en":"Bedrock","category":"자연 블록","tex":"blocks/bedrock"},"8":{"name":"물","en":"Water","category":"자연 블록","tex":null},"9":{"name":"물(고정)","en":"Stationary Water","category":"자연 블록","tex":null},"10":{"name":"용암","en":"Lava","category":"자연 블록","tex":null},"11":{"name":"용암(고정)","en":"Stationary Lava","category":"자연 블록","tex":null},"12":{"name":"모래","en":"Sand","category":"자연 블록","tex":"blocks/sand"},"13":{"name":"자갈","en":"Gravel","category":"자연 블록","tex":"blocks/gravel"},"14":{"name":"금 광석","en":"Gold Ore","category":"광물/자원 블록","tex":"blocks/gold_ore"},"15":{"name":"철 광석","en":"Iron Ore","category":"광물/자원 블록","tex":"blocks/iron_ore"},"16":{"name":"석탄 광석","en":"Coal Ore","category":"광물/자원 블록","tex":"blocks/coal_ore"},"17":{"name":"원목","en":"Wood","category":"건축 블록","tex":"blocks/log_oak_top"},"18":{"name":"나뭇잎","en":"Leaves","category":"식물/농작물","tex":"blocks/leaves_oak"},"19":{"name":"스펀지","en":"Sponge","category":"자연 블록","tex":"blocks/sponge"},"20":{"name":"유리","en":"Glass","category":"건축 블록","tex":"blocks/glass"},"21":{"name":"청금석 광석","en":"Lapis Lazuli Ore","category":"광물/자원 블록","tex":"blocks/lapis_ore"},"22":{"name":"청금석 블록","en":"Lapis Lazuli Block","category":"광물/자원 블록","tex":"blocks/lapis_block"},"23":{"name":"발사기","en":"Dispenser","category":"레드스톤/기계","tex":"blocks/dispenser_front_vertical"},"24":{"name":"사암","en":"Sandstone","category":"건축 블록","tex":"blocks/sandstone_bottom"},"25":{"name":"음표 블록","en":"Note Block","category":"레드스톤/기계","tex":"blocks/noteblock"},"26":{"name":"침대","en":"Bed","category":"자연 블록","tex":null},"27":{"name":"동력 레일","en":"Powered Rail","category":"레드스톤/기계","tex":"blocks/rail_golden"},"28":{"name":"감지 레일","en":"Detector Rail","category":"레드스톤/기계","tex":"blocks/rail_detector"},"29":{"name":"끈끈이 피스톤","en":"Sticky Piston","category":"레드스톤/기계","tex":"blocks/piston_bottom"},"30":{"name":"거미줄","en":"Cobweb","category":"자연 블록","tex":"blocks/web"},"31":{"name":"풀","en":"Grass","category":"식물/농작물","tex":"blocks/tallgrass"},"32":{"name":"마른 덤불","en":"Dead Bush","category":"식물/농작물","tex":"blocks/deadbush"},"33":{"name":"피스톤","en":"Piston","category":"레드스톤/기계","tex":"blocks/piston_bottom"},"34":{"name":"피스톤 머리","en":"Piston Head","category":"레드스톤/기계","tex":"blocks/piston_top_normal"},"35":{"name":"양털","en":"Wool","category":"염료/색상 블록","tex":"blocks/wool_colored_white"},"36":{"name":"피스톤이 옮긴 블록","en":"Block moved by Piston","category":"레드스톤/기계","tex":"blocks/piston_bottom"},"37":{"name":"민들레","en":"Dandelion","category":"식물/농작물","tex":"blocks/flower_dandelion"},"38":{"name":"양귀비","en":"Poppy","category":"식물/농작물","tex":"blocks/flower_rose"},"39":{"name":"갈색 버섯","en":"Mushroom","category":"식물/농작물","tex":"blocks/mushroom_brown"},"40":{"name":"빨간 버섯","en":"Mushroom","category":"식물/농작물","tex":"blocks/mushroom_red"},"41":{"name":"금 블록","en":"Block of Gold","category":"광물/자원 블록","tex":"blocks/gold_block"},"42":{"name":"철 블록","en":"Block of Iron","category":"광물/자원 블록","tex":"blocks/iron_block"},"43":{"name":"이중 돌 반블록","en":"Double Stone Slab","category":"건축 블록","tex":"blocks/stone_slab_top"},"44":{"name":"돌 반블록","en":"Stone Slab","category":"건축 블록","tex":"blocks/stone_slab_top"},"45":{"name":"벽돌","en":"Bricks","category":"건축 블록","tex":"blocks/brick"},"46":{"name":"TNT","en":"TNT","category":"자연 블록","tex":"blocks/tnt_bottom"},"47":{"name":"책장","en":"Bookshelf","category":"기능성 블록","tex":"blocks/planks_oak"},"48":{"name":"이끼 낀 돌","en":"Moss Stone","category":"자연 블록","tex":"blocks/cobblestone_mossy"},"49":{"name":"흑요석","en":"Obsidian","category":"자연 블록","tex":"blocks/obsidian"},"50":{"name":"횃불","en":"Torch","category":"자연 블록","tex":"blocks/torch_on"},"51":{"name":"불","en":"Fire","category":"자연 블록","tex":null},"52":{"name":"몬스터 스포너","en":"Monster Spawner","category":"자연 블록","tex":"blocks/mob_spawner"},"53":{"name":"참나무 계단","en":"Oak Wood Stairs","category":"건축 블록","tex":"blocks/planks_oak"},"54":{"name":"상자","en":"Chest","category":"기능성 블록","tex":null},"55":{"name":"레드스톤 가루","en":"Redstone Wire","category":"레드스톤/기계","tex":null},"56":{"name":"다이아몬드 광석","en":"Diamond Ore","category":"광물/자원 블록","tex":"blocks/diamond_ore"},"57":{"name":"다이아몬드 블록","en":"Block of Diamond","category":"광물/자원 블록","tex":"blocks/diamond_block"},"58":{"name":"제작대","en":"Crafting Table","category":"기능성 블록","tex":"blocks/crafting_table_front"},"59":{"name":"밀 작물","en":"Wheat","category":"식물/농작물","tex":"items/wheat"},"60":{"name":"경작지","en":"Farmland","category":"식물/농작물","tex":"blocks/dirt"},"61":{"name":"화로","en":"Furnace","category":"기능성 블록","tex":"blocks/furnace_top"},"62":{"name":"타는 화로","en":"Burning Furnace","category":"기능성 블록","tex":"blocks/furnace_top"},"63":{"name":"세워진 표지판","en":"Standing Sign","category":"자연 블록","tex":null},"64":{"name":"참나무 문","en":"Oak Door","category":"건축 블록","tex":"items/door_wood"},"65":{"name":"사다리","en":"Ladder","category":"자연 블록","tex":"blocks/ladder"},"66":{"name":"레일","en":"Rail","category":"레드스톤/기계","tex":"blocks/rail_normal"},"67":{"name":"조약돌 계단","en":"Cobblestone Stairs","category":"건축 블록","tex":"blocks/cobblestone"},"68":{"name":"벽 표지판","en":"Wall Sign","category":"건축 블록","tex":null},"69":{"name":"레버","en":"Lever","category":"레드스톤/기계","tex":"blocks/cobblestone"},"70":{"name":"돌 압력판","en":"Stone Pressure Plate","category":"레드스톤/기계","tex":"blocks/stone"},"71":{"name":"철문","en":"Iron Door","category":"건축 블록","tex":"items/door_iron"},"72":{"name":"나무 압력판","en":"Wooden Pressure Plate","category":"레드스톤/기계","tex":"blocks/planks_oak"},"73":{"name":"레드스톤 광석","en":"Redstone Ore","category":"레드스톤/기계","tex":"blocks/redstone_ore"},"74":{"name":"빛나는 레드스톤 광석","en":"Glowing Redstone Ore","category":"레드스톤/기계","tex":"blocks/redstone_ore"},"75":{"name":"레드스톤 횃불(꺼짐)","en":"Redstone Torch (inactive)","category":"레드스톤/기계","tex":"blocks/redstone_torch_off"},"76":{"name":"레드스톤 횃불(켜짐)","en":"Redstone Torch (active)","category":"레드스톤/기계","tex":"blocks/redstone_torch_on"},"77":{"name":"돌 버튼","en":"Stone Button","category":"레드스톤/기계","tex":"blocks/stone"},"78":{"name":"눈(단)","en":"Snow","category":"자연 블록","tex":"blocks/snow"},"79":{"name":"얼음","en":"Ice","category":"자연 블록","tex":"blocks/ice"},"80":{"name":"눈 블록","en":"Snow","category":"자연 블록","tex":"blocks/snow"},"81":{"name":"선인장","en":"Cactus","category":"식물/농작물","tex":"blocks/cactus_side"},"82":{"name":"점토","en":"Clay","category":"자연 블록","tex":"blocks/clay"},"83":{"name":"사탕수수","en":"Sugar Cane","category":"식물/농작물","tex":"items/reeds"},"84":{"name":"주크박스","en":"Jukebox","category":"기능성 블록","tex":"blocks/jukebox_top"},"85":{"name":"참나무 울타리","en":"Oak Fence","category":"건축 블록","tex":null},"86":{"name":"호박","en":"Pumpkin","category":"자연 블록","tex":"blocks/pumpkin_top"},"87":{"name":"네더랙","en":"Netherrack","category":"자연 블록","tex":"blocks/netherrack"},"88":{"name":"영혼 모래","en":"Soul Sand","category":"자연 블록","tex":"blocks/soul_sand"},"89":{"name":"발광석","en":"Glowstone","category":"자연 블록","tex":"blocks/glowstone"},"90":{"name":"네더 포탈","en":"Nether Portal","category":"자연 블록","tex":"blocks/portal"},"91":{"name":"호박등","en":"Jack o'Lantern","category":"자연 블록","tex":"blocks/pumpkin_top"},"92":{"name":"케이크","en":"Cake","category":"자연 블록","tex":"items/cake"},"93":{"name":"레드스톤 중계기","en":"Redstone Repeater","category":"레드스톤/기계","tex":"blocks/repeater_off"},"94":{"name":"레드스톤 중계기(켜짐)","en":"Redstone Repeater","category":"레드스톤/기계","tex":"blocks/repeater_on"},"95":{"name":"색유리","en":"Stained Glass","category":"염료/색상 블록","tex":"blocks/glass_white"},"96":{"name":"나무 트랩도어","en":"Wooden Trapdoor","category":"건축 블록","tex":"blocks/trapdoor"},"97":{"name":"위장 블록","en":"Monster Egg","category":"자연 블록","tex":null},"98":{"name":"석재 벽돌","en":"Stone Bricks","category":"건축 블록","tex":"blocks/stonebrick"},"99":{"name":"갈색 버섯 블록","en":"Mushroom","category":"식물/농작물","tex":"blocks/mushroom_block_inside"},"100":{"name":"빨간 버섯 블록","en":"Mushroom","category":"식물/농작물","tex":"blocks/mushroom_block_inside"},"101":{"name":"철창살","en":"Iron Bars","category":"자연 블록","tex":null},"102":{"name":"유리판","en":"Glass Pane","category":"건축 블록","tex":null},"103":{"name":"수박","en":"Melon","category":"광물/자원 블록","tex":"blocks/melon_top"},"104":{"name":"호박 줄기","en":"Pumpkin Stem","category":"식물/농작물","tex":"blocks/pumpkin_stem_disconnected"},"105":{"name":"수박 줄기","en":"Melon Stem","category":"식물/농작물","tex":"blocks/melon_stem_disconnected"},"106":{"name":"덩굴","en":"Vines","category":"식물/농작물","tex":"blocks/vine"},"107":{"name":"울타리 문","en":"Fence Gate","category":"건축 블록","tex":"blocks/planks_oak"},"108":{"name":"벽돌 계단","en":"Brick Stairs","category":"건축 블록","tex":"blocks/brick"},"109":{"name":"석재 벽돌 계단","en":"Stone Brick Stairs","category":"건축 블록","tex":"blocks/stonebrick"},"110":{"name":"균사체","en":"Mycelium","category":"자연 블록","tex":"blocks/dirt"},"111":{"name":"수련","en":"Lily Pad","category":"식물/농작물","tex":"blocks/waterlily"},"112":{"name":"네더 벽돌","en":"Nether Brick","category":"건축 블록","tex":"blocks/nether_brick"},"113":{"name":"네더 벽돌 울타리","en":"Nether Brick Fence","category":"건축 블록","tex":null},"114":{"name":"네더 벽돌 계단","en":"Nether Brick Stairs","category":"건축 블록","tex":"blocks/nether_brick"},"115":{"name":"네더의 사마귀","en":"Nether Wart","category":"식물/농작물","tex":"items/nether_wart"},"116":{"name":"마법부여대","en":"Enchantment Table","category":"기능성 블록","tex":"blocks/enchanting_table_bottom"},"117":{"name":"양조대","en":"Brewing Stand","category":"기능성 블록","tex":"items/brewing_stand"},"118":{"name":"가마솥","en":"Cauldron","category":"기능성 블록","tex":"items/cauldron"},"119":{"name":"엔드 포탈","en":"End Portal","category":"자연 블록","tex":null},"120":{"name":"엔드 포탈 액자","en":"End Portal","category":"자연 블록","tex":"blocks/endframe_side"},"121":{"name":"엔드 스톤","en":"End Stone","category":"자연 블록","tex":"blocks/end_stone"},"122":{"name":"드래곤 알","en":"Dragon Egg","category":"자연 블록","tex":"blocks/dragon_egg"},"123":{"name":"레드스톤 등","en":"Redstone Lamp","category":"레드스톤/기계","tex":"blocks/redstone_lamp_off"},"124":{"name":"레드스톤 등(켜짐)","en":"Redstone Lamp","category":"레드스톤/기계","tex":"blocks/redstone_lamp_on"},"125":{"name":"이중 나무 반블록","en":"Double Wooden Slab","category":"건축 블록","tex":"blocks/planks_oak"},"126":{"name":"나무 반블록","en":"Wooden Slab","category":"건축 블록","tex":"blocks/planks_oak"},"127":{"name":"코코아","en":"Cocoa","category":"식물/농작물","tex":"blocks/cocoa_stage_0"},"128":{"name":"사암 계단","en":"Sandstone Stairs","category":"건축 블록","tex":"blocks/sandstone_bottom"},"129":{"name":"에메랄드 광석","en":"Emerald Ore","category":"광물/자원 블록","tex":"blocks/emerald_ore"},"130":{"name":"엔더 상자","en":"Ender Chest","category":"기능성 블록","tex":null},"131":{"name":"실 갈고리","en":"Tripwire Hook","category":"레드스톤/기계","tex":"blocks/planks_oak"},"132":{"name":"실","en":"Tripwire","category":"레드스톤/기계","tex":"blocks/trip_wire"},"133":{"name":"에메랄드 블록","en":"Block of Emerald","category":"광물/자원 블록","tex":"blocks/emerald_block"},"134":{"name":"가문비나무 계단","en":"Spruce Wood Stairs","category":"건축 블록","tex":"blocks/planks_spruce"},"135":{"name":"자작나무 계단","en":"Birch Wood Stairs","category":"건축 블록","tex":"blocks/planks_birch"},"136":{"name":"정글나무 계단","en":"Jungle Wood Stairs","category":"건축 블록","tex":"blocks/planks_jungle"},"137":{"name":"명령 블록","en":"Command Block","category":"레드스톤/기계","tex":"blocks/command_block_back"},"138":{"name":"신호기","en":"Beacon","category":"기능성 블록","tex":"blocks/glass"},"139":{"name":"조약돌 담","en":"Cobblestone Wall","category":"건축 블록","tex":null},"140":{"name":"화분","en":"Flower Pot","category":"식물/농작물","tex":"items/flower_pot"},"141":{"name":"당근(작물)","en":"Carrot","category":"식물/농작물","tex":"blocks/carrots_stage_0"},"142":{"name":"감자(작물)","en":"Potato","category":"식물/농작물","tex":"blocks/potatoes_stage_0"},"143":{"name":"나무 버튼","en":"Wooden Button","category":"레드스톤/기계","tex":"blocks/planks_oak"},"144":{"name":"몹 머리","en":"Mob head","category":"자연 블록","tex":null},"145":{"name":"모루","en":"Anvil","category":"기능성 블록","tex":"blocks/anvil_base"},"146":{"name":"덫 상자","en":"Trapped Chest","category":"기능성 블록","tex":null},"147":{"name":"가벼운 무게추 압력판","en":"Weighted Pressure Plate (Light)","category":"레드스톤/기계","tex":"blocks/gold_block"},"148":{"name":"무거운 무게추 압력판","en":"Weighted Pressure Plate (Heavy)","category":"레드스톤/기계","tex":"blocks/iron_block"},"149":{"name":"레드스톤 비교기","en":"Redstone Comparator","category":"레드스톤/기계","tex":"blocks/comparator_off"},"150":{"name":"레드스톤 비교기(켜짐)","en":"Redstone Comparator (deprecated)","category":"레드스톤/기계","tex":"blocks/comparator_off"},"151":{"name":"일광 감지기","en":"Daylight Sensor","category":"레드스톤/기계","tex":"blocks/daylight_detector_top"},"152":{"name":"레드스톤 블록","en":"Block of Redstone","category":"레드스톤/기계","tex":"blocks/redstone_block"},"153":{"name":"네더 석영 광석","en":"Nether Quartz Ore","category":"건축 블록","tex":"blocks/quartz_ore"},"154":{"name":"호퍼","en":"Hopper","category":"레드스톤/기계","tex":"blocks/hopper_outside"},"155":{"name":"석영 블록","en":"Block of Quartz","category":"건축 블록","tex":"blocks/quartz_block_bottom"},"156":{"name":"석영 계단","en":"Quartz Stairs","category":"건축 블록","tex":"blocks/quartz_block_bottom"},"157":{"name":"활성 레일","en":"Activator Rail","category":"레드스톤/기계","tex":"blocks/rail_activator"},"158":{"name":"드로퍼","en":"Dropper","category":"레드스톤/기계","tex":"blocks/dropper_front_vertical"},"159":{"name":"색 테라코타","en":"Stained Clay","category":"염료/색상 블록","tex":"blocks/hardened_clay_stained_white"},"160":{"name":"색유리판","en":"Stained Glass Pane","category":"염료/색상 블록","tex":null},"161":{"name":"나뭇잎(아카시아/짙은참나무)","en":"Leaves (Acacia/Dark Oak)","category":"식물/농작물","tex":"blocks/leaves_acacia"},"162":{"name":"원목(아카시아/짙은참나무)","en":"Wood (Acacia/Dark Oak)","category":"건축 블록","tex":"blocks/log_acacia_top"},"163":{"name":"아카시아나무 계단","en":"Acacia Wood Stairs","category":"건축 블록","tex":"blocks/planks_acacia"},"164":{"name":"짙은참나무 계단","en":"Dark Oak Wood Stairs","category":"건축 블록","tex":"blocks/planks_big_oak"},"165":{"name":"슬라임 블록","en":"Slime Block","category":"자연 블록","tex":"blocks/slime"},"166":{"name":"배리어","en":"Barrier","category":"자연 블록","tex":null},"167":{"name":"철 트랩도어","en":"Iron Trapdoor","category":"건축 블록","tex":"blocks/iron_trapdoor"},"168":{"name":"프리즈머린","en":"Prismarine","category":"건축 블록","tex":"blocks/prismarine_rough"},"169":{"name":"바다 랜턴","en":"Sea Lantern","category":"자연 블록","tex":"blocks/sea_lantern"},"170":{"name":"건초 더미","en":"Hay Bale","category":"광물/자원 블록","tex":"blocks/hay_block_top"},"171":{"name":"카펫","en":"Carpet","category":"염료/색상 블록","tex":"blocks/wool_colored_white"},"172":{"name":"굳은 점토","en":"Hardened Clay","category":"염료/색상 블록","tex":"blocks/hardened_clay"},"173":{"name":"석탄 블록","en":"Block of Coal","category":"광물/자원 블록","tex":"blocks/coal_block"},"174":{"name":"뭉친 얼음","en":"Packed Ice","category":"자연 블록","tex":"blocks/ice_packed"},"175":{"name":"큰 꽃","en":"Large Flowers","category":"자연 블록","tex":"blocks/double_plant_sunflower_bottom"},"176":{"name":"세워진 깃발","en":"Standing Banner","category":"염료/색상 블록","tex":null},"177":{"name":"벽 깃발","en":"Wall Banner","category":"염료/색상 블록","tex":null},"178":{"name":"반전된 일광 감지기","en":"Inverted Daylight Sensor","category":"레드스톤/기계","tex":"blocks/daylight_detector_inverted_top"},"179":{"name":"붉은 사암","en":"Red Sandstone","category":"건축 블록","tex":"blocks/red_sandstone_bottom"},"180":{"name":"붉은 사암 계단","en":"Red Sandstone Stairs","category":"건축 블록","tex":"blocks/red_sandstone_bottom"},"181":{"name":"이중 붉은 사암 반블록","en":"Double Red Sandstone Slab","category":"건축 블록","tex":"blocks/red_sandstone_bottom"},"182":{"name":"붉은 사암 반블록","en":"Red Sandstone Slab","category":"건축 블록","tex":"blocks/red_sandstone_bottom"},"183":{"name":"가문비나무 울타리 문","en":"Spruce Fence Gate","category":"건축 블록","tex":"blocks/planks_spruce"},"184":{"name":"자작나무 울타리 문","en":"Birch Fence Gate","category":"건축 블록","tex":"blocks/planks_birch"},"185":{"name":"정글나무 울타리 문","en":"Jungle Fence Gate","category":"건축 블록","tex":"blocks/planks_jungle"},"186":{"name":"짙은참나무 울타리 문","en":"Dark Oak Fence Gate","category":"건축 블록","tex":"blocks/planks_big_oak"},"187":{"name":"아카시아나무 울타리 문","en":"Acacia Fence Gate","category":"건축 블록","tex":"blocks/planks_acacia"},"188":{"name":"가문비나무 울타리","en":"Spruce Fence","category":"건축 블록","tex":null},"189":{"name":"자작나무 울타리","en":"Birch Fence","category":"건축 블록","tex":null},"190":{"name":"정글나무 울타리","en":"Jungle Fence","category":"건축 블록","tex":null},"191":{"name":"짙은참나무 울타리","en":"Dark Oak Fence","category":"건축 블록","tex":null},"192":{"name":"아카시아나무 울타리","en":"Acacia Fence","category":"건축 블록","tex":null},"193":{"name":"가문비나무 문","en":"Spruce Door","category":"건축 블록","tex":"items/door_spruce"},"194":{"name":"자작나무 문","en":"Birch Door","category":"건축 블록","tex":"items/door_birch"},"195":{"name":"정글나무 문","en":"Jungle Door","category":"건축 블록","tex":"items/door_jungle"},"196":{"name":"아카시아나무 문","en":"Acacia Door","category":"건축 블록","tex":"items/door_acacia"},"197":{"name":"짙은참나무 문","en":"Dark Oak Door","category":"건축 블록","tex":"items/door_dark_oak"},"198":{"name":"엔드 막대","en":"End Rod","category":"자연 블록","tex":"blocks/end_rod"},"199":{"name":"코러스 식물","en":"Chorus Plant","category":"자연 블록","tex":null},"200":{"name":"코러스 꽃","en":"Chorus Flower","category":"식물/농작물","tex":"blocks/chorus_flower"},"201":{"name":"퍼퍼 블록","en":"Purpur Block","category":"건축 블록","tex":"blocks/purpur_block"},"202":{"name":"퍼퍼 기둥","en":"Purpur Pillar","category":"건축 블록","tex":"blocks/purpur_pillar_top"},"203":{"name":"퍼퍼 계단","en":"Purpur Stairs","category":"건축 블록","tex":"blocks/purpur_block"},"204":{"name":"이중 퍼퍼 반블록","en":"Purpur Double Slab","category":"건축 블록","tex":"blocks/purpur_block"},"205":{"name":"퍼퍼 반블록","en":"Purpur Slab","category":"건축 블록","tex":"blocks/purpur_block"},"206":{"name":"엔드 스톤 벽돌","en":"End Stone Bricks","category":"건축 블록","tex":"blocks/end_bricks"},"207":{"name":"비트뿌리 씨앗","en":"Beetroot Seeds","category":"자연 블록","tex":"blocks/beetroots_stage_0"},"208":{"name":"잔디 길","en":"Grass Path","category":"자연 블록","tex":"blocks/dirt"},"209":{"name":"엔드 게이트웨이","en":"End Gateway","category":"자연 블록","tex":null},"210":{"name":"반복 명령 블록","en":"Repeating Command Block","category":"레드스톤/기계","tex":"blocks/repeating_command_block_back"},"211":{"name":"연쇄 명령 블록","en":"Chain Command Block","category":"레드스톤/기계","tex":"blocks/chain_command_block_back"},"212":{"name":"서리 낀 얼음","en":"Frosted Ice","category":"자연 블록","tex":"blocks/frosted_ice_0"},"213":{"name":"마그마 블록","en":"Magma Block","category":"자연 블록","tex":"blocks/magma"},"214":{"name":"네더의 사마귀 블록","en":"Nether Wart Block","category":"식물/농작물","tex":"blocks/nether_wart_block"},"215":{"name":"붉은 네더 벽돌","en":"Red Nether Brick","category":"건축 블록","tex":"blocks/red_nether_brick"},"216":{"name":"뼈 블록","en":"Bone Block","category":"광물/자원 블록","tex":"blocks/bone_block_top"},"217":{"name":"구조물 공백","en":"Structure Void","category":"자연 블록","tex":null},"218":{"name":"관찰자","en":"Observer","category":"레드스톤/기계","tex":"blocks/observer_back"},"219":{"name":"흰색 셜커 상자","en":"White Shulker Box","category":"자연 블록","tex":null},"220":{"name":"주황색 셜커 상자","en":"Orange Shulker Box","category":"자연 블록","tex":null},"221":{"name":"자홍색 셜커 상자","en":"Magenta Shulker Box","category":"자연 블록","tex":null},"222":{"name":"하늘색 셜커 상자","en":"Light Blue Shulker Box","category":"자연 블록","tex":null},"223":{"name":"노란색 셜커 상자","en":"Yellow Shulker Box","category":"자연 블록","tex":null},"224":{"name":"연두색 셜커 상자","en":"Lime Shulker Box","category":"자연 블록","tex":null},"225":{"name":"분홍색 셜커 상자","en":"Pink Shulker Box","category":"자연 블록","tex":null},"226":{"name":"회색 셜커 상자","en":"Gray Shulker Box","category":"자연 블록","tex":null},"227":{"name":"밝은 회색 셜커 상자","en":"Light Gray Shulker Box","category":"자연 블록","tex":null},"228":{"name":"청록색 셜커 상자","en":"Cyan Shulker Box","category":"자연 블록","tex":null},"229":{"name":"보라색 셜커 상자","en":"Purple Shulker Box","category":"자연 블록","tex":null},"230":{"name":"파란색 셜커 상자","en":"Blue Shulker Box","category":"자연 블록","tex":null},"231":{"name":"갈색 셜커 상자","en":"Brown Shulker Box","category":"자연 블록","tex":null},"232":{"name":"초록색 셜커 상자","en":"Green Shulker Box","category":"자연 블록","tex":null},"233":{"name":"빨간색 셜커 상자","en":"Red Shulker Box","category":"자연 블록","tex":null},"234":{"name":"검은색 셜커 상자","en":"Black Shulker Box","category":"자연 블록","tex":null},"235":{"name":"흰색 유약 테라코타","en":"White Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_white"},"236":{"name":"주황색 유약 테라코타","en":"Orange Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_orange"},"237":{"name":"자홍색 유약 테라코타","en":"Magenta Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_magenta"},"238":{"name":"하늘색 유약 테라코타","en":"Light Blue Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_light_blue"},"239":{"name":"노란색 유약 테라코타","en":"Yellow Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_yellow"},"240":{"name":"연두색 유약 테라코타","en":"Lime Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_lime"},"241":{"name":"분홍색 유약 테라코타","en":"Pink Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_pink"},"242":{"name":"회색 유약 테라코타","en":"Gray Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_gray"},"243":{"name":"밝은 회색 유약 테라코타","en":"Light Gray Glazed Terracotta","category":"염료/색상 블록","tex":null},"244":{"name":"청록색 유약 테라코타","en":"Cyan Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_cyan"},"245":{"name":"보라색 유약 테라코타","en":"Purple Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_purple"},"246":{"name":"파란색 유약 테라코타","en":"Blue Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_blue"},"247":{"name":"갈색 유약 테라코타","en":"Brown Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_brown"},"248":{"name":"초록색 유약 테라코타","en":"Green Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_green"},"249":{"name":"빨간색 유약 테라코타","en":"Red Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_red"},"250":{"name":"검은색 유약 테라코타","en":"Black Glazed Terracotta","category":"염료/색상 블록","tex":"blocks/glazed_terracotta_black"},"251":{"name":"콘크리트","en":"Concrete","category":"자연 블록","tex":null},"252":{"name":"콘크리트 가루","en":"Concrete Powder","category":"자연 블록","tex":null},"255":{"name":"구조물 블록","en":"Structure Block","category":"광물/자원 블록","tex":"blocks/structure_block_save"},"256":{"name":"철 삽","en":"Iron Shovel","category":"도구","tex":"items/iron_shovel"},"257":{"name":"철 곡괭이","en":"Iron Pickaxe","category":"도구","tex":"items/iron_pickaxe"},"258":{"name":"철 도끼","en":"Iron Axe","category":"도구","tex":"items/iron_axe"},"259":{"name":"부싯돌과 부시","en":"Flint and Steel","category":"도구","tex":"items/flint_and_steel"},"260":{"name":"사과","en":"Apple","category":"음식","tex":"items/apple"},"261":{"name":"활","en":"Bow","category":"무기","tex":"items/bow_standby"},"262":{"name":"화살","en":"Arrow","category":"무기","tex":"items/arrow"},"263":{"name":"석탄","en":"Coal","category":"재료","tex":"items/coal"},"264":{"name":"다이아몬드","en":"Diamond","category":"재료","tex":"items/diamond"},"265":{"name":"철 주괴","en":"Iron Ingot","category":"재료","tex":"items/iron_ingot"},"266":{"name":"금 주괴","en":"Gold Ingot","category":"재료","tex":"items/gold_ingot"},"267":{"name":"철 검","en":"Iron Sword","category":"무기","tex":"items/iron_sword"},"268":{"name":"나무 검","en":"Wooden Sword","category":"무기","tex":"items/wood_sword"},"269":{"name":"나무 삽","en":"Wooden Shovel","category":"도구","tex":"items/wood_shovel"},"270":{"name":"나무 곡괭이","en":"Wooden Pickaxe","category":"도구","tex":"items/wood_pickaxe"},"271":{"name":"나무 도끼","en":"Wooden Axe","category":"도구","tex":"items/wood_axe"},"272":{"name":"돌 검","en":"Stone Sword","category":"무기","tex":"items/stone_sword"},"273":{"name":"돌 삽","en":"Stone Shovel","category":"도구","tex":"items/stone_shovel"},"274":{"name":"돌 곡괭이","en":"Stone Pickaxe","category":"도구","tex":"items/stone_pickaxe"},"275":{"name":"돌 도끼","en":"Stone Axe","category":"도구","tex":"items/stone_axe"},"276":{"name":"다이아몬드 검","en":"Diamond Sword","category":"무기","tex":"items/diamond_sword"},"277":{"name":"다이아몬드 삽","en":"Diamond Shovel","category":"도구","tex":"items/diamond_shovel"},"278":{"name":"다이아몬드 곡괭이","en":"Diamond Pickaxe","category":"도구","tex":"items/diamond_pickaxe"},"279":{"name":"다이아몬드 도끼","en":"Diamond Axe","category":"도구","tex":"items/diamond_axe"},"280":{"name":"막대기","en":"Stick","category":"기타","tex":"items/stick"},"281":{"name":"그릇","en":"Bowl","category":"무기","tex":"items/bowl"},"282":{"name":"버섯 스튜","en":"Mushroom Stew","category":"음식","tex":"items/mushroom_stew"},"283":{"name":"금 검","en":"Golden Sword","category":"무기","tex":"items/gold_sword"},"284":{"name":"금 삽","en":"Golden Shovel","category":"도구","tex":"items/gold_shovel"},"285":{"name":"금 곡괭이","en":"Golden Pickaxe","category":"도구","tex":"items/gold_pickaxe"},"286":{"name":"금 도끼","en":"Golden Axe","category":"도구","tex":"items/gold_axe"},"287":{"name":"실","en":"String","category":"재료","tex":"items/string"},"288":{"name":"깃털","en":"Feather","category":"재료","tex":"items/feather"},"289":{"name":"화약","en":"Gunpowder","category":"양조/연금","tex":"items/gunpowder"},"290":{"name":"나무 괭이","en":"Wooden Hoe","category":"도구","tex":"items/wood_hoe"},"291":{"name":"돌 괭이","en":"Stone Hoe","category":"도구","tex":"items/stone_hoe"},"292":{"name":"철 괭이","en":"Iron Hoe","category":"도구","tex":"items/iron_hoe"},"293":{"name":"다이아몬드 괭이","en":"Diamond Hoe","category":"도구","tex":"items/diamond_hoe"},"294":{"name":"금 괭이","en":"Golden Hoe","category":"도구","tex":"items/gold_hoe"},"295":{"name":"씨앗","en":"Seeds","category":"기타","tex":"items/seeds_wheat"},"296":{"name":"밀","en":"Wheat","category":"기타","tex":"items/wheat"},"297":{"name":"빵","en":"Bread","category":"음식","tex":"items/bread"},"298":{"name":"가죽 모자","en":"Leather Cap","category":"방어구","tex":"items/leather_helmet"},"299":{"name":"가죽 상의","en":"Leather Tunic","category":"방어구","tex":"items/leather_chestplate"},"300":{"name":"가죽 바지","en":"Leather Pants","category":"방어구","tex":"items/leather_leggings"},"301":{"name":"가죽 부츠","en":"Leather Boots","category":"방어구","tex":"items/leather_boots"},"302":{"name":"사슬 모자","en":"Chain Helmet","category":"방어구","tex":"items/chainmail_helmet"},"303":{"name":"사슬 갑옷","en":"Chain Chestplate","category":"방어구","tex":"items/chainmail_chestplate"},"304":{"name":"사슬 레깅스","en":"Chain Leggings","category":"방어구","tex":"items/chainmail_leggings"},"305":{"name":"사슬 부츠","en":"Chain Boots","category":"방어구","tex":"items/chainmail_boots"},"306":{"name":"철 모자","en":"Iron Helmet","category":"방어구","tex":"items/iron_helmet"},"307":{"name":"철 갑옷","en":"Iron Chestplate","category":"방어구","tex":"items/iron_chestplate"},"308":{"name":"철 레깅스","en":"Iron Leggings","category":"방어구","tex":"items/iron_leggings"},"309":{"name":"철 부츠","en":"Iron Boots","category":"방어구","tex":"items/iron_boots"},"310":{"name":"다이아몬드 모자","en":"Diamond Helmet","category":"방어구","tex":"items/diamond_helmet"},"311":{"name":"다이아몬드 갑옷","en":"Diamond Chestplate","category":"방어구","tex":"items/diamond_chestplate"},"312":{"name":"다이아몬드 레깅스","en":"Diamond Leggings","category":"방어구","tex":"items/diamond_leggings"},"313":{"name":"다이아몬드 부츠","en":"Diamond Boots","category":"방어구","tex":"items/diamond_boots"},"314":{"name":"금 모자","en":"Golden Helmet","category":"방어구","tex":"items/gold_helmet"},"315":{"name":"금 갑옷","en":"Golden Chestplate","category":"방어구","tex":"items/gold_chestplate"},"316":{"name":"금 레깅스","en":"Golden Leggings","category":"방어구","tex":"items/gold_leggings"},"317":{"name":"금 부츠","en":"Golden Boots","category":"방어구","tex":"items/gold_boots"},"318":{"name":"부싯돌","en":"Flint","category":"기타","tex":"items/flint"},"319":{"name":"익히지 않은 돼지고기","en":"Raw Porkchop","category":"음식","tex":"items/porkchop_raw"},"320":{"name":"익힌 돼지고기","en":"Cooked Porkchop","category":"음식","tex":"items/porkchop_cooked"},"321":{"name":"그림","en":"Painting","category":"장식","tex":"items/painting"},"322":{"name":"황금 사과","en":"Golden Apple","category":"음식","tex":"items/apple_golden"},"323":{"name":"표지판","en":"Sign","category":"장식","tex":"items/sign"},"324":{"name":"참나무 문","en":"Oak Door","category":"기타","tex":"items/door_wood"},"325":{"name":"양동이","en":"Bucket","category":"기타","tex":"items/bucket_empty"},"326":{"name":"물 양동이","en":"Water Bucket","category":"기타","tex":"items/bucket_water"},"327":{"name":"용암 양동이","en":"Lava Bucket","category":"기타","tex":"items/bucket_lava"},"328":{"name":"광산 수레","en":"Minecart","category":"운송","tex":"items/minecart_normal"},"329":{"name":"안장","en":"Saddle","category":"운송","tex":"items/saddle"},"330":{"name":"철문","en":"Iron Door","category":"기타","tex":"items/door_iron"},"331":{"name":"레드스톤","en":"Redstone","category":"양조/연금","tex":"items/redstone_dust"},"332":{"name":"눈덩이","en":"Snowball","category":"기타","tex":"items/snowball"},"333":{"name":"보트","en":"Boat","category":"운송","tex":"items/oak_boat"},"334":{"name":"가죽","en":"Leather","category":"재료","tex":"items/leather"},"335":{"name":"우유","en":"Milk","category":"음식","tex":"items/bucket_milk"},"336":{"name":"벽돌","en":"Brick","category":"재료","tex":"items/brick"},"337":{"name":"점토 덩어리","en":"Clay","category":"재료","tex":"items/clay_ball"},"338":{"name":"사탕수수","en":"Sugar Canes","category":"기타","tex":"items/reeds"},"339":{"name":"종이","en":"Paper","category":"재료","tex":"items/paper"},"340":{"name":"책","en":"Book","category":"재료","tex":"items/book_normal"},"341":{"name":"슬라임볼","en":"Slimeball","category":"재료","tex":"items/slimeball"},"342":{"name":"상자 광산 수레","en":"Minecart with Chest","category":"운송","tex":"items/minecart_chest"},"343":{"name":"화로 광산 수레","en":"Minecart with Furnace","category":"운송","tex":"items/minecart_furnace"},"344":{"name":"달걀","en":"Egg","category":"음식","tex":"items/egg"},"345":{"name":"나침반","en":"Compass","category":"도구","tex":"items/compass_16"},"346":{"name":"낚싯대","en":"Fishing Rod","category":"도구","tex":"items/fishing_rod_uncast"},"347":{"name":"시계","en":"Clock","category":"도구","tex":"items/clock_00"},"348":{"name":"발광석 가루","en":"Glowstone Dust","category":"양조/연금","tex":"items/glowstone_dust"},"349":{"name":"날 물고기","en":"Fish","category":"음식","tex":"items/fish_pufferfish_raw"},"350":{"name":"익힌 물고기","en":"Cooked Fish","category":"음식","tex":"items/fish_salmon_cooked"},"351":{"name":"염료","en":"Dye","category":"염료/색상","tex":"items/dye_powder_black"},"352":{"name":"뼈","en":"Bone","category":"재료","tex":"items/bone"},"353":{"name":"설탕","en":"Sugar","category":"음식","tex":"items/sugar"},"354":{"name":"케이크","en":"Cake","category":"음식","tex":"items/cake"},"355":{"name":"침대","en":"Bed","category":"기타","tex":null},"356":{"name":"레드스톤 중계기","en":"Redstone Repeater","category":"기타","tex":"items/repeater"},"357":{"name":"쿠키","en":"Cookie","category":"음식","tex":"items/cookie"},"358":{"name":"지도","en":"Map","category":"기타","tex":"items/map_filled"},"359":{"name":"가위","en":"Shears","category":"도구","tex":"items/shears"},"360":{"name":"수박 조각","en":"Melon","category":"음식","tex":"items/melon"},"361":{"name":"호박 씨앗","en":"Pumpkin Seeds","category":"기타","tex":"items/seeds_pumpkin"},"362":{"name":"수박 씨앗","en":"Melon Seeds","category":"음식","tex":"items/seeds_melon"},"363":{"name":"익히지 않은 소고기","en":"Raw Beef","category":"음식","tex":"items/beef_raw"},"364":{"name":"스테이크","en":"Steak","category":"음식","tex":"items/beef_cooked"},"365":{"name":"익히지 않은 닭고기","en":"Raw Chicken","category":"음식","tex":"items/chicken_raw"},"366":{"name":"익힌 닭고기","en":"Cooked Chicken","category":"음식","tex":"items/chicken_cooked"},"367":{"name":"썩은 살점","en":"Rotten Flesh","category":"기타","tex":"items/rotten_flesh"},"368":{"name":"엔더 진주","en":"Ender Pearl","category":"재료","tex":"items/ender_pearl"},"369":{"name":"블레이즈 막대","en":"Blaze Rod","category":"재료","tex":"items/blaze_rod"},"370":{"name":"가스트의 눈물","en":"Ghast Tear","category":"양조/연금","tex":"items/ghast_tear"},"371":{"name":"금 조각","en":"Gold Nugget","category":"재료","tex":"items/gold_nugget"},"372":{"name":"네더의 사마귀","en":"Nether Wart","category":"양조/연금","tex":"items/nether_wart"},"373":{"name":"물약","en":"Potion","category":"양조/연금","tex":"items/potion_overlay"},"374":{"name":"유리병","en":"Glass Bottle","category":"양조/연금","tex":"items/potion_bottle_empty"},"375":{"name":"거미 눈","en":"Spider Eye","category":"양조/연금","tex":"items/spider_eye"},"376":{"name":"발효된 거미 눈","en":"Fermented Spider Eye","category":"양조/연금","tex":"items/spider_eye_fermented"},"377":{"name":"블레이즈 가루","en":"Blaze Powder","category":"양조/연금","tex":"items/blaze_powder"},"378":{"name":"마그마 크림","en":"Magma Cream","category":"양조/연금","tex":"items/magma_cream"},"379":{"name":"양조대","en":"Brewing Stand","category":"기타","tex":"items/brewing_stand"},"380":{"name":"가마솥","en":"Cauldron","category":"기타","tex":"items/cauldron"},"381":{"name":"엔더의 눈","en":"Eye of Ender","category":"재료","tex":"items/ender_eye"},"382":{"name":"반짝이는 수박 조각","en":"Glistering Melon","category":"음식","tex":"items/melon_speckled"},"383":{"name":"소환 알","en":"Spawn Egg","category":"음식","tex":"items/spawn_egg"},"384":{"name":"마법의 병","en":"Bottle o' Enchanting","category":"기타","tex":"items/experience_bottle"},"385":{"name":"화염구","en":"Fire Charge","category":"기타","tex":"items/fireball"},"386":{"name":"책과 깃펜","en":"Book and Quill","category":"재료","tex":"items/book_writable"},"387":{"name":"쓰여진 책","en":"Written Book","category":"재료","tex":"items/book_written"},"388":{"name":"에메랄드","en":"Emerald","category":"재료","tex":"items/emerald"},"389":{"name":"아이템 액자","en":"Item Frame","category":"장식","tex":"items/item_frame"},"390":{"name":"화분","en":"Flower Pot","category":"장식","tex":"items/flower_pot"},"391":{"name":"당근","en":"Carrot","category":"음식","tex":"items/carrot"},"392":{"name":"감자","en":"Potato","category":"음식","tex":"items/potato"},"393":{"name":"구운 감자","en":"Baked Potato","category":"음식","tex":"items/potato_baked"},"394":{"name":"독이 든 감자","en":"Poisonous Potato","category":"음식","tex":"items/potato_poisonous"},"395":{"name":"빈 지도","en":"Empty Map","category":"기타","tex":"items/map_empty"},"396":{"name":"황금 당근","en":"Golden Carrot","category":"음식","tex":"items/carrot_golden"},"397":{"name":"해골","en":"Skull","category":"기타","tex":null},"398":{"name":"당근 낚싯대","en":"Carrot on a Stick","category":"도구","tex":"items/carrot_on_a_stick"},"399":{"name":"네더의 별","en":"Nether Star","category":"재료","tex":"items/nether_star"},"400":{"name":"호박 파이","en":"Pumpkin Pie","category":"음식","tex":"items/pumpkin_pie"},"401":{"name":"폭죽","en":"Firework Rocket","category":"기타","tex":"items/fireworks"},"402":{"name":"폭죽별","en":"Firework Star","category":"기타","tex":"items/fireworks_charge"},"403":{"name":"마법이 부여된 책","en":"Enchanted Book","category":"재료","tex":"items/book_enchanted"},"404":{"name":"레드스톤 비교기","en":"Redstone Comparator","category":"기타","tex":"items/comparator"},"405":{"name":"네더 벽돌","en":"Nether Brick","category":"재료","tex":"items/netherbrick"},"406":{"name":"네더 석영","en":"Nether Quartz","category":"기타","tex":"items/quartz"},"407":{"name":"TNT 광산 수레","en":"Minecart with TNT","category":"운송","tex":"items/minecart_tnt"},"408":{"name":"호퍼 광산 수레","en":"Minecart with Hopper","category":"운송","tex":"items/minecart_hopper"},"409":{"name":"프리즈머린 조각","en":"Prismarine Shard","category":"재료","tex":"items/prismarine_shard"},"410":{"name":"프리즈머린 결정","en":"Prismarine Crystals","category":"재료","tex":"items/prismarine_crystals"},"411":{"name":"익히지 않은 토끼고기","en":"Raw Rabbit","category":"음식","tex":"items/rabbit_raw"},"412":{"name":"익힌 토끼고기","en":"Cooked Rabbit","category":"음식","tex":"items/rabbit_cooked"},"413":{"name":"토끼 스튜","en":"Rabbit Stew","category":"음식","tex":"items/rabbit_stew"},"414":{"name":"토끼 발","en":"Rabbit's Foot","category":"음식","tex":"items/rabbit_foot"},"415":{"name":"토끼 가죽","en":"Rabbit Hide","category":"음식","tex":"items/rabbit_hide"},"416":{"name":"갑옷 거치대","en":"Armor Stand","category":"장식","tex":"items/wooden_armorstand"},"417":{"name":"철 말 갑옷","en":"Iron Horse Armor","category":"기타","tex":"items/iron_horse_armor"},"418":{"name":"금 말 갑옷","en":"Gold Horse Armor","category":"기타","tex":"items/gold_horse_armor"},"419":{"name":"다이아몬드 말 갑옷","en":"Diamond Horse Armor","category":"재료","tex":"items/diamond_horse_armor"},"420":{"name":"목줄","en":"Lead","category":"도구","tex":"items/lead"},"421":{"name":"이름표","en":"Name Tag","category":"도구","tex":"items/name_tag"},"422":{"name":"명령 블록 광산 수레","en":"Minecart with Command Block","category":"운송","tex":"items/minecart_command_block"},"423":{"name":"익히지 않은 양고기","en":"Raw Mutton","category":"음식","tex":"items/mutton_raw"},"424":{"name":"익힌 양고기","en":"Cooked Mutton","category":"음식","tex":"items/mutton_cooked"},"425":{"name":"깃발","en":"Banner","category":"염료/색상","tex":null},"426":{"name":"엔드 수정","en":"End Crystal","category":"장식","tex":"items/end_crystal"},"427":{"name":"가문비나무 문","en":"Spruce Door","category":"기타","tex":"items/door_spruce"},"428":{"name":"자작나무 문","en":"Birch Door","category":"기타","tex":"items/door_birch"},"429":{"name":"정글나무 문","en":"Jungle Door","category":"기타","tex":"items/door_jungle"},"430":{"name":"아카시아나무 문","en":"Acacia Door","category":"기타","tex":"items/door_acacia"},"431":{"name":"짙은참나무 문","en":"Dark Oak Door","category":"기타","tex":"items/door_dark_oak"},"432":{"name":"코러스 열매","en":"Chorus Fruit","category":"기타","tex":"items/chorus_fruit"},"433":{"name":"구워진 코러스 열매","en":"Popped Chorus Fruit","category":"기타","tex":"items/chorus_fruit_popped"},"434":{"name":"비트뿌리","en":"Beetroot","category":"음식","tex":"items/beetroot"},"435":{"name":"비트뿌리 씨앗","en":"Beetroot Seeds","category":"음식","tex":"items/beetroot_seeds"},"436":{"name":"비트뿌리 수프","en":"Beetroot Soup","category":"음식","tex":"items/beetroot_soup"},"437":{"name":"드래곤의 숨결","en":"Dragon's Breath","category":"양조/연금","tex":"items/dragon_breath"},"438":{"name":"튀는 물약","en":"Splash Potion","category":"양조/연금","tex":"items/potion_overlay"},"439":{"name":"영혼의 화살","en":"Spectral Arrow","category":"무기","tex":"items/spectral_arrow"},"440":{"name":"효과의 화살","en":"Tipped Arrow","category":"무기","tex":"items/tipped_arrow_head"},"441":{"name":"잔류형 물약","en":"Lingering Potion","category":"양조/연금","tex":"items/potion_overlay"},"442":{"name":"방패","en":"Shield","category":"무기","tex":null},"443":{"name":"겉날개","en":"Elytra","category":"운송","tex":"items/elytra"},"444":{"name":"가문비나무 보트","en":"Spruce Boat","category":"운송","tex":"items/spruce_boat"},"445":{"name":"자작나무 보트","en":"Birch Boat","category":"운송","tex":"items/birch_boat"},"446":{"name":"정글나무 보트","en":"Jungle Boat","category":"운송","tex":"items/jungle_boat"},"447":{"name":"아카시아나무 보트","en":"Acacia Boat","category":"운송","tex":"items/acacia_boat"},"448":{"name":"짙은참나무 보트","en":"Dark Oak Boat","category":"운송","tex":"items/dark_oak_boat"},"449":{"name":"불사의 토템","en":"Totem of Undying","category":"기타","tex":"items/totem"},"450":{"name":"셜커 껍질","en":"Shulker Shell","category":"기타","tex":"items/shulker_shell"},"452":{"name":"철 조각","en":"Iron Nugget","category":"재료","tex":"items/iron_nugget"},"453":{"name":"지식의 책","en":"Knowledge Book","category":"재료","tex":null}};
+
+  const CATEGORY_SWATCH = {
+    '자연 블록': '#7a5a3a',
+    '건축 블록': '#b7a37a',
+    '광물/자원 블록': '#e0c419',
+    '식물/농작물': '#6aa84f',
+    '레드스톤/기계': '#d94a3d',
+    '염료/색상 블록': '#c26bb0',
+    '기능성 블록': '#8d8d8d',
+    '도구': '#a5a5a5',
+    '무기': '#c0392b',
+    '방어구': '#5b8cc9',
+    '음식': '#e08a3c',
+    '재료': '#9b7653',
+    '양조/연금': '#7c4fbf',
+    '염료/색상': '#c26bb0',
+    '장식': '#d4af37',
+    '운송': '#4fa0bf',
+    '음악': '#58e1e6',
+    '기타': '#6b665c'
+  };
+
+  const ids = Object.keys(ITEM_DATA).map(Number).sort((a,b)=>a-b);
+  const categories = [...new Set(ids.map(id => ITEM_DATA[id].category))];
+
+  document.getElementById('totalBadge').textContent = ids.length + ' ITEMS';
+
+  const chipRow = document.getElementById('chipRow');
+  let activeCategory = '전체';
+
+  function renderChips(){
+    const all = ['전체', ...categories];
+    chipRow.innerHTML = all.map(cat => {
+      const swatch = cat === '전체' ? '#f0c419' : (CATEGORY_SWATCH[cat] || '#888');
+      const isActive = cat === activeCategory ? ' active' : '';
+      return `<button class="chip${isActive}" data-cat="${cat}">
+        <span class="swatch" style="background:${swatch}"></span>${cat}
+      </button>`;
+    }).join('');
+  }
+
+  chipRow.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip');
+    if(!btn) return;
+    activeCategory = btn.dataset.cat;
+    renderChips();
+    renderGrid();
+  });
+
+  const grid = document.getElementById('grid');
+  const emptyState = document.getElementById('emptyState');
+  const resultCount = document.getElementById('resultCount');
+  const searchInput = document.getElementById('searchInput');
+
+  function placeholderSVG(id){
+    return `data:image/svg+xml;utf8,` + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="#2c2a25"/><text x="20" y="24" font-family="monospace" font-size="10" fill="#5c584e" text-anchor="middle">${id}</text></svg>`
+    );
+  }
+
+  const CDN_BASE = 'https://cdn.jsdelivr.net/gh/PrismarineJS/minecraft-assets@master/data/1.12/';
+
+  function renderGrid(){
+    const q = searchInput.value.trim().toLowerCase();
+    const filtered = ids.filter(id => {
+      const item = ITEM_DATA[id];
+      const matchesCat = activeCategory === '전체' || item.category === activeCategory;
+      if(!matchesCat) return false;
+      if(!q) return true;
+      return String(id).includes(q) || item.name.includes(q) || (item.en||'').toLowerCase().includes(q);
+    });
+
+    resultCount.textContent = filtered.length + ' / ' + ids.length;
+
+    if(filtered.length === 0){
+      grid.innerHTML = '';
+      emptyState.style.display = 'block';
+      return;
+    }
+    emptyState.style.display = 'none';
+
+    grid.innerHTML = filtered.map(id => {
+      const item = ITEM_DATA[id];
+      const cdnUrl = item.tex ? (CDN_BASE + item.tex + '.png') : '';
+      // 1) 로컬 images/{id}.png 시도 -> 2) 실패 시 온라인 텍스처 시도 -> 3) 실패 시 플레이스홀더
+      const fallbackChain = cdnUrl
+        ? `this.onerror=function(){this.onerror=null;this.src='${placeholderSVG(id)}';this.style.width='60%';this.style.height='60%';};this.src='${cdnUrl}';`
+        : `this.onerror=null;this.src='${placeholderSVG(id)}';this.style.width='60%';this.style.height='60%';`;
+      return `
+      <div class="item-card">
+        <div class="item-slot">
+          <span class="item-id">#${id}</span>
+          <img src="images/${id}.png" alt="${item.name}"
+               onerror="${fallbackChain}">
+        </div>
+        <div class="item-name">${item.name}</div>
+        <div class="item-name-en">${item.en || ''}</div>
+        <div class="item-cat">${item.category}</div>
+      </div>`;
+    }).join('');
+  }
+
+  searchInput.addEventListener('input', renderGrid);
+
+  renderChips();
+  renderGrid();
+</script>
+
+</body>
+</html>
